@@ -1,0 +1,243 @@
+library(dplyr)
+library(ggplot2)
+#library(openxlsx)
+
+
+#========================================================================================================#
+data_1994 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T1994220.csv',header = T)
+data_1999 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T1999220.csv',header = T)
+data_2004 =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T2004220.csv',header = T)
+data_2009 =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T2009220.csv',header = T)
+data_2014 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T2014220.csv',header = T)
+#colnames(data_1994)[7] = '胸径'
+data_1994$原样地号 = as.character(data_1994$原样地号)
+data_1999$原样地号 = as.character(data_1999$原样地号)
+data_2004$原样地号 = as.character(data_2004$原样地号)
+data_2009$原样地号 =as.character(data_2009$原样地号)
+data_2014$原样地号 =as.character(data_2014$原样地号)
+
+
+data_1994$检尺类型 =as.character(data_1994$检尺类型)
+data_1999$检尺类型 =as.character(data_1999$检尺类型)
+data_2004$检尺类型 =as.character(data_2004$检尺类型)
+data_2009$检尺类型 =as.character(data_2009$检尺类型)
+data_2014$检尺类型 =as.character(data_2014$检尺类型)
+
+
+data_1994=data_1994%>%filter(检尺类型=='11')
+data_1999=data_1999%>%filter(检尺类型=='11')
+data_2004=data_2004%>%filter(检尺类型=='11')
+data_2009=data_2009%>%filter(检尺类型=='11')
+data_2014=data_2014%>%filter(检尺类型=='11')
+
+
+
+
+
+#修正94年，99年，04年，09年胸径
+
+data_1994 = data_1994%>%mutate(胸径=胸径/10)
+data_1999 = data_1999%>%mutate(胸径=胸径/10)
+data_2004 = data_2004%>%mutate(胸径=胸径/10)
+data_2009 = data_2009%>%mutate(胸径=胸径/10)
+
+
+#得到BA
+
+data_1994 = data_1994%>%mutate(活立木大BA_qian =((pi/40000)*(胸径)^2)/0.0667)
+data_1999 = data_1999%>%mutate(活立木大BA_qian =((pi/40000)*(胸径)^2)/0.0667)
+data_2004 = data_2004%>%mutate(活立木大BA_qian =((pi/40000)*(胸径)^2)/0.0667)
+data_2009 = data_2009%>%mutate(活立木大BA_qian =((pi/40000)*(胸径)^2)/0.0667)
+data_2014 = data_2014%>%mutate(活立木大BA_qian =((pi/40000)*(胸径)^2)/0.0667)
+
+
+#删去缺失值
+
+
+data_1994 =data_1994[complete.cases(data_1994),]
+data_1999 =data_1999[complete.cases(data_1999),]
+data_2004 =data_2004[complete.cases(data_2004),]
+data_2009 =data_2009[complete.cases(data_2009),]
+
+
+
+##计算rsdi（每公顷）
+
+rSDI = function(data){
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    n = length(data_j)
+    data_j = data_j%>%mutate(Dq = sqrt(sum(胸径)/n))%>%mutate(rSDI = n/0.0667*((Dq/20)^1.605))
+    data_New = rbind(data_New,data_j)
+    
+  }
+  return(data_New)
+}
+
+
+
+data_1994 = rSDI(data = data_1994)
+data_1999 = rSDI(data = data_1999)
+data_2004 = rSDI(data = data_2004)
+data_2009 = rSDI(data = data_2009)
+data_2014 = rSDI(data = data_2014)
+
+
+
+
+# ##树种代码修正===================================================================================================#
+unique(data_1994$树种代码)
+data_1994 = data_1994%>%
+  mutate(树种代码=ifelse(树种代码==20,110,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==30,120,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==70,150,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==10,160,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==80,170,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==90,180,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==240,410,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==250,420,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==210,430,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==260,490,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==270,510,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==310,530,树种代码))
+#1999
+
+unique(data_1999$树种代码)
+data_1999 = data_1999%>%
+  mutate(树种代码=ifelse(树种代码==535,530,树种代码))
+
+#2004
+data_2004 = data_2004%>%
+  mutate(树种代码=ifelse(树种代码==535,530,树种代码))
+unique(data_2004$树种代码)
+#2009
+unique(data_2009$树种代码)
+
+# data_2009 = data_2009%>%
+#   mutate(树种代码=ifelse(树种代码==537,530,树种代码))%>%
+#   mutate(树种代码=ifelse(树种代码==162,160,树种代码))%>%
+#   mutate(树种代码=ifelse(树种代码==201,200,树种代码))%>%
+#   mutate(树种代码=ifelse(树种代码==181,180,树种代码))
+# 
+
+
+
+
+##2009年有问题 太细，将2009年与之前数据对齐。
+data_2009 = data_2009%>%
+  mutate(树种代码=ifelse(树种代码==171,170,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==467,460,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==491,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==597,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==493,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==511,510,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==593,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==124,120,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==161,160,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==492,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==411,410,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==591,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==461,460,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==462,460,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==592,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==151,150,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==596,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==512,510,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==539,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==532,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==535,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==534,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==111,110,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==412,410,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==531,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==533,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==122,120,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==536,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==538,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==594,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==123,120,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==191,190,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==463,460,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==466,460,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==181,180,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==182,180,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==201,200,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==464,460,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==465,460,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==537,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==423,422,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==162,160,树种代码))
+#========================================================================================================#
+
+data_2014 = data_2014%>%
+  mutate(树种代码=ifelse(树种代码==171,170,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==467,460,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==491,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==597,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==493,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==511,510,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==593,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==124,120,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==161,160,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==492,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==411,410,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==591,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==461,460,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==462,460,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==592,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==151,150,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==596,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==512,510,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==539,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==532,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==535,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==534,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==111,110,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==412,410,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==531,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==533,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==122,120,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==536,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==538,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==594,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==123,120,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==191,190,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==463,460,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==466,460,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==181,180,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==182,180,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==201,200,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==464,460,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==465,460,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==537,530,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==423,422,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==162,160,树种代码))
+
+unique(data_2014$树种代码)
+
+
+
+
+
+###得到每个样地的树种占比
+
+zhanbi = function(data){
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    YangdiSumBA = sum(data_j$活立木大BA_qian)
+    for(i in unique(data_j$树种代码)){
+      data_j_i = data_j%>%filter(树种代码==i)
+      data_j_i=data_j_i%>%mutate(BAzhanbi = sum(data_j_i$活立木大BA_qian)/YangdiSumBA)
+      data_New = rbind(data_New,data_j_i)
+    }
+    
+  }
+  return(data_New)
+}
+data_1994 = zhanbi(data = data_1994)
+data_1999 = zhanbi(data = data_1999)
+data_2004 = zhanbi(data = data_2004)
+data_2009 = zhanbi(data = data_2009)
+data_2014 = zhanbi(data = data_2014)
