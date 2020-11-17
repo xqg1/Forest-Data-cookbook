@@ -4,11 +4,11 @@ library(ggplot2)
 
 
 #========================================================================================================#
-data_1994 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T1994220.csv',header = T)
-data_1999 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T1999220.csv',header = T)
-data_2004 =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T2004220.csv',header = T)
-data_2009 =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T2009220.csv',header = T)
-data_2014 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T2014220.csv',header = T)
+data_1994 = read.csv('...\\T1994220.csv',header = T)
+data_1999 = read.csv('...\\T1999220.csv',header = T)
+data_2004 =  read.csv('...\\T2004220.csv',header = T)
+data_2009 =  read.csv('...\\T2009220.csv',header = T)
+data_2014 = read.csv('...\\T2014220.csv',header = T)
 #colnames(data_1994)[7] = '胸径'
 data_1994$原样地号 = as.character(data_1994$原样地号)
 data_1999$原样地号 = as.character(data_1999$原样地号)
