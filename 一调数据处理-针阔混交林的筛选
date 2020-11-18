@@ -1,14 +1,19 @@
+#####----R语言环境------###### 2020年11月18日
+#联系方式：371352079@qq.com
+
+
+
 library(dplyr)
 library(ggplot2)
 #library(openxlsx)
 
 
 #========================================================================================================#
-data_1994 = read.csv('...\\T1994220.csv',header = T)
-data_1999 = read.csv('...\\T1999220.csv',header = T)
-data_2004 =  read.csv('...\\T2004220.csv',header = T)
-data_2009 =  read.csv('...\\T2009220.csv',header = T)
-data_2014 = read.csv('...\\T2014220.csv',header = T)
+data_1994 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T1994220.csv',header = T)
+data_1999 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T1999220.csv',header = T)
+data_2004 =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T2004220.csv',header = T)
+data_2009 =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T2009220.csv',header = T)
+data_2014 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T2014220.csv',header = T)
 #colnames(data_1994)[7] = '胸径'
 data_1994$原样地号 = as.character(data_1994$原样地号)
 data_1999$原样地号 = as.character(data_1999$原样地号)
@@ -76,12 +81,12 @@ rSDI = function(data){
 }
 
 
-
-data_1994 = rSDI(data = data_1994)
-data_1999 = rSDI(data = data_1999)
-data_2004 = rSDI(data = data_2004)
-data_2009 = rSDI(data = data_2009)
-data_2014 = rSDI(data = data_2014)
+# 
+# data_1994 = rSDI(data = data_1994)
+# data_1999 = rSDI(data = data_1999)
+# data_2004 = rSDI(data = data_2004)
+# data_2009 = rSDI(data = data_2009)
+# data_2014 = rSDI(data = data_2014)
 
 
 
@@ -212,7 +217,12 @@ data_2014 = data_2014%>%
   mutate(树种代码=ifelse(树种代码==465,460,树种代码))%>%
   mutate(树种代码=ifelse(树种代码==537,530,树种代码))%>%
   mutate(树种代码=ifelse(树种代码==423,422,树种代码))%>%
-  mutate(树种代码=ifelse(树种代码==162,160,树种代码))
+  mutate(树种代码=ifelse(树种代码==162,160,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==706,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==703,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==999,590,树种代码))%>%
+  mutate(树种代码=ifelse(树种代码==851,590,树种代码))
+
 
 unique(data_2014$树种代码)
 
@@ -241,3 +251,88 @@ data_1999 = zhanbi(data = data_1999)
 data_2004 = zhanbi(data = data_2004)
 data_2009 = zhanbi(data = data_2009)
 data_2014 = zhanbi(data = data_2014)
+
+
+setwd('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据')
+
+write.csv(data_1994,'data_1994.csv',fileEncoding = 'UTF-8')
+write.csv(data_1999,'data_1999.csv',fileEncoding = 'UTF-8')
+write.csv(data_2004,'data_2004.csv',fileEncoding = 'UTF-8')
+write.csv(data_2009,'data_2009.csv',fileEncoding = 'UTF-8')
+write.csv(data_2014,'data_2014.csv',fileEncoding = 'UTF-8')
+
+#========================================================================================================#
+# data_1994 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_1994.csv',header = T,encoding = 'UTF-8')
+# data_1999 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_1999.csv',header = T,encoding = 'UTF-8')
+# data_2004 =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_2004.csv',header = T,encoding = 'UTF-8')
+# data_2009 =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_2009.csv',header = T,encoding = 'UTF-8')
+# data_2014 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_2014.csv',header = T,encoding = 'UTF-8')
+
+
+#=====================================================================================================================#
+
+###针阔混交林的筛选逻辑
+
+# 1.算出根数据各树种BA占比。（已完成）
+# 
+#任何单一种类不超过0.65，必须针叶树种与阔叶树种同时存在
+#
+# 
+
+#增加字段，得到针叶树种、阔叶类、其他类树种的字段
+
+
+data_1994 = data_1994%>%
+  mutate(树种大类=ifelse(树种代码==160|树种代码==120|树种代码==170|树种代码==150|树种代码==110|树种代码==180|树种代码==190|树种代码==200|树种代码==260|树种代码==290,'针叶树种',ifelse(树种代码==431|树种代码==432|树种代码==433|树种代码==510|树种代码==410|树种代码==460,'阔叶树种','其他类树种')))
+
+data_1999 = data_1999%>%
+  mutate(树种大类=ifelse(树种代码==160|树种代码==120|树种代码==170|树种代码==150|树种代码==110|树种代码==180|树种代码==190|树种代码==200|树种代码==260|树种代码==290,'针叶树种',ifelse(树种代码==431|树种代码==432|树种代码==433|树种代码==510|树种代码==410|树种代码==460,'阔叶树种','其他类树种')))
+
+data_2004 = data_2004%>%
+  mutate(树种大类=ifelse(树种代码==160|树种代码==120|树种代码==170|树种代码==150|树种代码==110|树种代码==180|树种代码==190|树种代码==200|树种代码==260|树种代码==290,'针叶树种',ifelse(树种代码==431|树种代码==432|树种代码==433|树种代码==510|树种代码==410|树种代码==460,'阔叶树种','其他类树种')))
+
+data_2009 =data_2009%>%
+  mutate(树种大类=ifelse(树种代码==160|树种代码==120|树种代码==170|树种代码==150|树种代码==110|树种代码==180|树种代码==190|树种代码==200|树种代码==260|树种代码==290,'针叶树种',ifelse(树种代码==431|树种代码==432|树种代码==433|树种代码==510|树种代码==410|树种代码==460,'阔叶树种','其他类树种')))
+
+data_2014 = data_2014%>%
+  mutate(树种大类=ifelse(树种代码==160|树种代码==120|树种代码==170|树种代码==150|树种代码==110|树种代码==180|树种代码==190|树种代码==200|树种代码==260|树种代码==290,'针叶树种',ifelse(树种代码==431|树种代码==432|树种代码==433|树种代码==510|树种代码==410|树种代码==460,'阔叶树种','其他类树种')))
+####针阔混交林划分
+
+zhenkuohunjiao_select = function(data){
+  
+  data_New = data.frame()
+  for (i in unique(data$原样地号)){
+    data_i = data%>%filter(原样地号==i)
+    data_i_temp = data_i%>%distinct(树种代码,BAzhanbi,树种大类)
+    data_i_zhenye = data_i_temp%>%filter(树种大类=='针叶树种')
+    data_i_kuoye = data_i_temp %>%filter(树种大类=='阔叶树种')
+    data_i_qita = data_i_temp%>%filter(树种大类=='其他类树种')
+    sum_BAzhanbi_zhenye = sum(data_i_zhenye$BAzhanbi)
+    sum_BAzhanbi_kuoye = sum(data_i_kuoye$BAzhanbi)
+    sum_BAzhanbi_qita = sum(data_i_qita$BAzhanbi)
+    
+    
+    if(sum_BAzhanbi_zhenye<0.65&sum_BAzhanbi_zhenye>0&sum_BAzhanbi_kuoye<0.65&sum_BAzhanbi_kuoye>0&sum_BAzhanbi_qita<0.65){
+      data_New = rbind(data_New,data_i)
+    }
+  }
+  
+  return(data_New)
+  
+}
+
+
+
+
+
+
+
+
+
+data_1994 = zhenkuohunjiao_select(data = data_1994)
+data_1999 = zhenkuohunjiao_select(data = data_1999)
+data_2004 = zhenkuohunjiao_select(data = data_2004)
+data_2009 = zhenkuohunjiao_select(data = data_2009)
+data_2014 = zhenkuohunjiao_select(data = data_2014)
+
+
