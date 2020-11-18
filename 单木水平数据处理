@@ -6,7 +6,7 @@ library(ggplot2)
 #====================================================================================================================#
 #截取针阔混交林信息
 # 
-# data_duizhao = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T_YDfactors_final.csv',header = T)
+# data_duizhao = read.csv('...\\T_YDfactors_final.csv',header = T)
 # data_duizhao = data_duizhao%>%select('原样地号','优势树种o')
 # 
 # data_duizhao =data_duizhao%>%filter(优势树种o =='针阔混交')
@@ -18,11 +18,11 @@ library(ggplot2)
 # data_2009 =data_2009[data_2009$原样地号%in%data_duizhao$原样地号,]
 # data_2014 =data_2014[data_2014$原样地号%in%data_duizhao$原样地号,]
 #读取已筛选完毕的针阔混数据
-data_1994 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_1994_zhenkuohun.csv',header = T,encoding = 'UTF-8')
-data_1999 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_1999_zhenkuohun.csv',header = T,encoding = 'UTF-8')
-data_2004 =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_2004_zhenkuohun.csv',header = T,encoding = 'UTF-8')
-data_2009 =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_2009_zhenkuohun.csv',header = T,encoding = 'UTF-8')
-data_2014 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_2014_zhenkuohun.csv',header = T,encoding = 'UTF-8')
+data_1994 = read.csv('...\\data_1994_zhenkuohun.csv',header = T,encoding = 'UTF-8')
+data_1999 = read.csv('...\\data_1999_zhenkuohun.csv',header = T,encoding = 'UTF-8')
+data_2004 =  read.csv('...\\data_2004_zhenkuohun.csv',header = T,encoding = 'UTF-8')
+data_2009 =  read.csv('...\\data_2009_zhenkuohun.csv',header = T,encoding = 'UTF-8')
+data_2014 = read.csv('...\\data_2014_zhenkuohun.csv',header = T,encoding = 'UTF-8')
 
 
 data_1994$原样地号 = as.character(data_1994$原样地号)
@@ -125,11 +125,11 @@ data_2014 = BAL(data = data_2014)
 
 
 
-data_1994_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P1994220.csv',header = T)
-data_1999_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P1999220.csv',header = T)
-data_2004_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P2004220.csv',header = T)
-data_2009_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P2009220.csv',header = T)
-data_2014_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P2014220.csv',header = T)
+data_1994_plot = read.csv('...\\P1994220.csv',header = T)
+data_1999_plot = read.csv('...\\P1999220.csv',header = T)
+data_2004_plot = read.csv('...\\P2004220.csv',header = T)
+data_2009_plot = read.csv('...\\P2009220.csv',header = T)
+data_2014_plot = read.csv('...\\P2014220.csv',header = T)
 
 data_1994_plot$原样地号 = as.character(data_1994_plot$原样地号)
 data_1999_plot$原样地号 = as.character(data_1999_plot$原样地号)
@@ -154,5 +154,5 @@ data_Yangmu_Zong = data_Yangmu_Zong%>%select(立木类型,样木号,树种代码
                                                  平均年龄,龄组,平均树高,郁闭度)
 
 data_Yangmu_Zong = data_Yangmu_Zong[complete.cases(data_Yangmu_Zong),]
-setwd('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据')
+setwd('...')
 write.csv(data_Yangmu_Zong,'data_Yangmu_Zong.csv',fileEncoding = 'UTF-8')
