@@ -1,0 +1,158 @@
+
+library(dplyr)
+library(ggplot2)
+#library(openxlsx)
+
+#====================================================================================================================#
+#截取针阔混交林信息
+# 
+# data_duizhao = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T_YDfactors_final.csv',header = T)
+# data_duizhao = data_duizhao%>%select('原样地号','优势树种o')
+# 
+# data_duizhao =data_duizhao%>%filter(优势树种o =='针阔混交')
+# length(unique(data_duizhao$原样地号))
+# 
+# data_1994 =data_1994[data_1994$原样地号%in%data_duizhao$原样地号,]
+# data_1999 =data_1999[data_1999$原样地号%in%data_duizhao$原样地号,]
+# data_2004 =data_2004[data_2004$原样地号%in%data_duizhao$原样地号,]
+# data_2009 =data_2009[data_2009$原样地号%in%data_duizhao$原样地号,]
+# data_2014 =data_2014[data_2014$原样地号%in%data_duizhao$原样地号,]
+#读取已筛选完毕的针阔混数据
+data_1994 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_1994_zhenkuohun.csv',header = T,encoding = 'UTF-8')
+data_1999 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_1999_zhenkuohun.csv',header = T,encoding = 'UTF-8')
+data_2004 =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_2004_zhenkuohun.csv',header = T,encoding = 'UTF-8')
+data_2009 =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_2009_zhenkuohun.csv',header = T,encoding = 'UTF-8')
+data_2014 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_2014_zhenkuohun.csv',header = T,encoding = 'UTF-8')
+
+
+data_1994$原样地号 = as.character(data_1994$原样地号)
+data_1999$原样地号 = as.character(data_1999$原样地号)
+data_2004$原样地号 = as.character(data_2004$原样地号)
+data_2009$原样地号 =as.character(data_2009$原样地号)
+data_2014$原样地号 =as.character(data_2014$原样地号)
+
+
+data_1994$检尺类型 =as.character(data_1994$检尺类型)
+data_1999$检尺类型 =as.character(data_1999$检尺类型)
+data_2004$检尺类型 =as.character(data_2004$检尺类型)
+data_2009$检尺类型 =as.character(data_2009$检尺类型)
+data_2014$检尺类型 =as.character(data_2014$检尺类型)
+
+
+data_1994=data_1994%>%filter(检尺类型=='11')
+data_1999=data_1999%>%filter(检尺类型=='11')
+data_2004=data_2004%>%filter(检尺类型=='11')
+data_2009=data_2009%>%filter(检尺类型=='11')
+data_2014=data_2014%>%filter(检尺类型=='11')
+
+
+
+#=================================================================================================================================#
+
+
+
+
+
+#========================================================================================================#
+data_1994_BA =data_1994%>%select(原样地号,样木号,胸径)%>%mutate(活立木大BA_hou = ((pi/40000)*(胸径)^2)/0.0667)%>%select(原样地号,样木号,活立木大BA_hou)
+data_1999_BA =data_1999%>%select(原样地号,样木号,胸径)%>%mutate(活立木大BA_hou =((pi/40000)*(胸径)^2 )/0.0667)%>%select(原样地号,样木号,活立木大BA_hou)
+data_2004_BA =data_2004%>%select(原样地号,样木号,胸径)%>%mutate(活立木大BA_hou =((pi/40000)*(胸径)^2 )/0.0667)%>%select(原样地号,样木号,活立木大BA_hou)
+data_2009_BA =data_2009%>%select(原样地号,样木号,胸径)%>%mutate(活立木大BA_hou =((pi/40000)*(胸径)^2 )/0.0667)%>%select(原样地号,样木号,活立木大BA_hou)
+data_2014_BA =data_2014%>%select(原样地号,样木号,胸径)%>%mutate(活立木大BA_hou =((pi/40000)*(胸径)^2 )/0.0667)%>%select(原样地号,样木号,活立木大BA_hou) 
+#========================================================================================================#
+
+
+data_1994 = left_join(data_1994,data_1999_BA)
+data_1994 = data_1994%>%mutate(活立木大BA_qian =((pi/40000)*(胸径/10)^2)/0.0667)%>%mutate(BAI = (活立木大BA_hou-活立木大BA_qian)/5)
+data_1999 = left_join(data_1999,data_2004_BA)%>%mutate(活立木大BA_qian =((pi/40000)*(胸径)^2 )/0.0667)%>%mutate(BAI = (活立木大BA_hou-活立木大BA_qian)/5)
+data_2004 = left_join(data_2004,data_2009_BA)%>%mutate(活立木大BA_qian =((pi/40000)*(胸径)^2 )/0.0667)%>%mutate(BAI = (活立木大BA_hou-活立木大BA_qian)/5)
+data_2009 = left_join(data_2009,data_2014_BA)%>%mutate(活立木大BA_qian =((pi/40000)*(胸径)^2 )/0.0667)%>%mutate(BAI = (活立木大BA_hou-活立木大BA_qian)/5)
+
+
+
+data_1994 =data_1994[complete.cases(data_1994),]
+data_1999 =data_1999[complete.cases(data_1999),]
+data_2004 =data_2004[complete.cases(data_2004),]
+data_2009 =data_2009[complete.cases(data_2009),]
+
+
+##修正1999年至2004年出现的记录错误样地
+#保留正常的
+data_1999_you = data_1999%>%filter(BAI!=0)
+#修正不正常的
+data_1999_wu =data_1999%>%filter(BAI ==0)%>%select(-活立木大BA_hou)%>%left_join(data_2009_BA)%>%mutate(BAI = (活立木大BA_hou-活立木大BA_qian)/10)
+#合并
+data_1999 = bind_rows(data_1999_you,data_1999_wu)
+
+#去除2004年不正常的
+data_2004 = data_2004%>%filter((原样地号%in%data_1999_you$原样地号))
+
+
+
+#==============================================================================================================================================#
+#计算BAL
+
+###得到每个样地的bal函数
+BAL = function(data){
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    data_j = data_j%>%mutate(BA =((pi/40000)*(胸径)^2 )/0.0667)
+    for ( i in unique(data_j$样木号)){
+      BA_i = as.numeric(data_j%>%filter(样木号==i)%>%select(BA))
+      temp = data_j%>%filter(样木号!=i)%>%filter(BA>BA_i)
+      data_j[data_j$样木号==i,'BAL'] = sum(temp$BA)
+    }
+    data_New = rbind(data_New,data_j)
+    
+  }
+  return(data_New)
+}
+
+
+data_1994 = BAL(data = data_1994)
+data_1999 = BAL(data = data_1999)
+data_2004 = BAL(data = data_2004)
+data_2009 = BAL(data = data_2009)
+data_2014 = BAL(data = data_2014)
+
+
+
+#=========================================================================================================================#
+
+
+#=======================================================================================================================#
+
+
+
+data_1994_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P1994220.csv',header = T)
+data_1999_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P1999220.csv',header = T)
+data_2004_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P2004220.csv',header = T)
+data_2009_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P2009220.csv',header = T)
+data_2014_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P2014220.csv',header = T)
+
+data_1994_plot$原样地号 = as.character(data_1994_plot$原样地号)
+data_1999_plot$原样地号 = as.character(data_1999_plot$原样地号)
+data_2004_plot$原样地号 = as.character(data_2004_plot$原样地号)
+data_2009_plot$原样地号 =as.character(data_2009_plot$原样地号)
+data_2014_plot$原样地号 =as.character(data_2014_plot$原样地号)
+
+
+
+data_1994_Yangmu = left_join(data_1994,data_1994_plot,by = '原样地号')
+
+colnames(data_1994_Yangmu)[41] = '土层厚度'
+data_1999_Yangmu = left_join(data_1999,data_1999_plot,by = '原样地号')
+data_2004_Yangmu = left_join(data_2004,data_1999_plot,by = '原样地号')
+data_2009_Yangmu = left_join(data_2009,data_1999_plot,by = '原样地号')
+
+
+data_Yangmu_Zong = bind_rows(data_1994_Yangmu,data_1999_Yangmu,data_2004_Yangmu,data_2009_Yangmu)
+colnames(data_Yangmu_Zong)
+data_Yangmu_Zong = data_Yangmu_Zong%>%select(立木类型,样木号,树种代码,检尺类型,胸径,原样地号,活立木大BA_qian,aSDI_yangmu,aSDI,Dq,rSDI,BAzhanbi,树种大类,
+                                                 活立木大BA_hou,BAI,BA,BAL,样地类别,地类,海拔,地貌,坡向,坡度,坡位,土壤名称,土层厚度,林种,优势树种,起源,
+                                                 平均年龄,龄组,平均树高,郁闭度)
+
+data_Yangmu_Zong = data_Yangmu_Zong[complete.cases(data_Yangmu_Zong),]
+setwd('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据')
+write.csv(data_Yangmu_Zong,'data_Yangmu_Zong.csv',fileEncoding = 'UTF-8')
