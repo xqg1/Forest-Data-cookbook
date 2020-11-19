@@ -1,0 +1,368 @@
+
+
+
+#计算asdi
+
+aSDI = function(data){
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    data_j =data_j%>%mutate(aSDI_yangmu =((胸径/20)^1.605)/0.0667)%>%mutate(aSDI = sum(aSDI_yangmu))
+    data_New = rbind(data_New,data_j)
+    
+    
+  }
+  return(data_New)
+}
+
+
+#
+data_1994 = aSDI(data = data_1994)
+data_1999 = aSDI(data = data_1999)
+data_2004 = aSDI(data = data_2004)
+data_2009 = aSDI(data = data_2009)
+data_2014 = aSDI(data = data_2014)
+#==============================================================================================================================#
+
+##计算rsdi（每公顷）
+
+rSDI = function(data){
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    n = length(data_j)
+    data_j = data_j%>%mutate(Dq = sqrt(sum(胸径)/n))%>%mutate(rSDI = n/0.0667*((Dq/20)^1.605))
+    data_New = rbind(data_New,data_j)
+    
+  }
+  return(data_New)
+}
+
+
+#
+data_1994 = rSDI(data = data_1994)
+data_1999 = rSDI(data = data_1999)
+data_2004 = rSDI(data = data_2004)
+data_2009 = rSDI(data = data_2009)
+data_2014 = rSDI(data = data_2014)
+
+
+
+
+###得到每个样地的树种占比
+
+zhanbi = function(data){
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    YangdiSumBA = sum(data_j$活立木大BA_qian)
+    for(i in unique(data_j$树种代码)){
+      data_j_i = data_j%>%filter(树种代码==i)
+      data_j_i=data_j_i%>%mutate(BAzhanbi = sum(data_j_i$活立木大BA_qian)/YangdiSumBA)
+      data_New = rbind(data_New,data_j_i)
+    }
+    
+  }
+  return(data_New)
+}
+data_1994 = zhanbi(data = data_1994)
+data_1999 = zhanbi(data = data_1999)
+data_2004 = zhanbi(data = data_2004)
+data_2009 = zhanbi(data = data_2009)
+data_2014 = zhanbi(data = data_2014)
+
+
+
+
+
+#==============================================================================================================================================#
+#计算BAL
+
+###得到每个样地的bal函数
+BAL = function(data){
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    data_j = data_j%>%mutate(BA =((pi/40000)*(胸径)^2 )/0.0667)
+    for ( i in unique(data_j$样木号)){
+      BA_i = as.numeric(data_j%>%filter(样木号==i)%>%select(BA))
+      temp = data_j%>%filter(样木号!=i)%>%filter(BA>BA_i)
+      data_j[data_j$样木号==i,'BAL'] = sum(temp$BA)
+    }
+    data_New = rbind(data_New,data_j)
+    
+  }
+  return(data_New)
+}
+
+
+data_1994 = BAL(data = data_1994)
+data_1999 = BAL(data = data_1999)
+data_2004 = BAL(data = data_2004)
+data_2009 = BAL(data = data_2009)
+data_2014 = BAL(data = data_2014)
+
+
+#计算种间BAL 
+zhongjian_BAL = function(data){
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    data_j = data_j%>%mutate(BA =((pi/40000)*(胸径)^2 )/0.0667)
+    for ( i in unique(data_j$样木号)){
+      BA_i = as.numeric(data_j%>%filter(样木号==i)%>%select(BA))
+      shuzhongdaima_i = as.character(data_j%>%filter(样木号==i)%>%select(树种代码))
+      temp = data_j%>%filter(样木号!=i)%>%filter(BA>BA_i)%>%filter(树种代码!=shuzhongdaima_i)
+      data_j[data_j$样木号==i,'zhongjian_BAL'] = sum(temp$BA)
+    }
+    data_New = rbind(data_New,data_j)
+    
+  }
+  return(data_New)
+}
+
+
+
+data_1994 = zhongjian_BAL(data = data_1994)
+data_1999 = zhongjian_BAL(data = data_1999)
+data_2004 = zhongjian_BAL(data = data_2004)
+data_2009 = zhongjian_BAL(data = data_2009)
+data_2014 = zhongjian_BAL(data = data_2014)
+
+##计算种内BAL
+zhongnei_BAL = function(data){
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    data_j = data_j%>%mutate(BA =((pi/40000)*(胸径)^2 )/0.0667)
+    for ( i in unique(data_j$样木号)){
+      BA_i = as.numeric(data_j%>%filter(样木号==i)%>%select(BA))
+      shuzhongdaima_i = as.character(data_j%>%filter(样木号==i)%>%select(树种代码))
+      temp = data_j%>%filter(样木号!=i)%>%filter(BA>BA_i)%>%filter(树种代码==shuzhongdaima_i)
+      data_j[data_j$样木号==i,'zhongnei_BAL'] = sum(temp$BA)
+    }
+    data_New = rbind(data_New,data_j)
+    
+  }
+  return(data_New)
+}
+
+
+
+data_1994 = zhongnei_BAL(data = data_1994)
+data_1999 = zhongnei_BAL(data = data_1999)
+data_2004 = zhongnei_BAL(data = data_2004)
+data_2009 = zhongnei_BAL(data = data_2009)
+data_2014 = zhongnei_BAL(data = data_2014)
+
+
+
+
+#计算直径多样性 shannon均匀度指数，公式取自欧师兄开题报告
+
+
+DI_shannon = function(data){
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    data_j = data_j%>%mutate(BA =((pi/40000)*(胸径)^2 )/0.0667)
+    Yangdi_BA = sum(data_j$BA)
+    n = nrow(data_j)
+    data_j = data_j%>%mutate(DI_shannon = -sum((data_j$BA)/Yangdi_BA*log(data_j$BA/Yangdi_BA))/log(n))
+    data_New = rbind(data_New,data_j)
+    
+  }
+  return(data_New)
+}
+
+
+
+data_1994 = DI_shannon(data = data_1994)
+data_1999 = DI_shannon(data = data_1999)
+data_2004 = DI_shannon(data = data_2004)
+data_2009 = DI_shannon(data = data_2009)
+data_2014 = DI_shannon(data = data_2014)
+
+#计算直径多样性Simpson指数
+
+
+
+DI_simpson = function(data){
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    data_j = data_j%>%mutate(BA =((pi/40000)*(胸径)^2 )/0.0667)
+    Yangdi_BA = sum(data_j$BA)
+    n = nrow(data_j)
+    data_j = data_j%>%mutate(DI_simpson = 1-sum((data_j$BA/Yangdi_BA)^2))
+    data_New = rbind(data_New,data_j)
+    
+  }
+  return(data_New)
+}
+
+
+data_1994 = DI_simpson(data = data_1994)
+data_1999 = DI_simpson(data = data_1999)
+data_2004 = DI_simpson(data = data_2004)
+data_2009 = DI_simpson(data = data_2009)
+data_2014 = DI_simpson(data = data_2014)
+
+
+
+#DI_McIntosh
+
+DI_McIntosh = function(data){
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    data_j = data_j%>%mutate(BA =((pi/40000)*(胸径)^2 )/0.0667)
+    Yangdi_BA = sum(data_j$BA)
+    n = nrow(data_j)
+    data_j = data_j%>%mutate(DI_McIntosh = (data_j$BA-sqrt(sum(data_j$BA^2)))/data_j$BA-(data_j$BA/sqrt(n)))
+    data_New = rbind(data_New,data_j)
+    
+  }
+  return(data_New)
+}
+
+
+data_1994 = DI_McIntosh(data = data_1994)
+data_1999 = DI_McIntosh(data = data_1999)
+data_2004 = DI_McIntosh(data = data_2004)
+data_2009 = DI_McIntosh(data = data_2009)
+data_2014 = DI_McIntosh(data = data_2014)
+
+#Berger-Parker指数
+
+DI_Berger_Parker = function(data){
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    data_j = data_j%>%mutate(BA =((pi/40000)*(胸径)^2 )/0.0667)
+    Yangdi_BA = sum(data_j$BA)
+    n = nrow(data_j)
+    data_j = data_j%>%mutate(DI_Berger_Parker = 1-(max(data_j$BA)/Yangdi_BA))
+    data_New = rbind(data_New,data_j)
+    
+  }
+  return(data_New)
+}
+
+
+data_1994 = DI_Berger_Parker(data = data_1994)
+data_1999 = DI_Berger_Parker(data = data_1999)
+data_2004 = DI_Berger_Parker(data = data_2004)
+data_2009 = DI_Berger_Parker(data = data_2009)
+data_2014 = DI_Berger_Parker(data = data_2014)
+
+###树种多样性指数
+
+
+TSI_shannon = function(data){
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    data_j = data_j%>%mutate(BA =((pi/40000)*(胸径)^2 )/0.0667)
+    Yangdi_BA = sum(data_j$BA)
+    N = nrow(data_j)
+    s = length(unique(data_j$树种代码))
+    si = data_j%>%group_by(树种代码)%>%summarise(n = n())
+    data_j = data_j%>%mutate(TSI_shannon = -sum((si$n/N)*log(si$n/N))/log(s))
+    data_New = rbind(data_New,data_j)
+    
+  }
+  return(data_New)
+}
+
+
+
+data_1994 = TSI_shannon(data = data_1994)
+data_1999 = TSI_shannon(data = data_1999)
+data_2004 = TSI_shannon(data = data_2004)
+data_2009 = TSI_shannon(data = data_2009)
+data_2014 = TSI_shannon(data = data_2014)
+
+
+
+
+#TSI_simpson
+TSI_simpson = function(data){
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    data_j = data_j%>%mutate(BA =((pi/40000)*(胸径)^2 )/0.0667)
+    Yangdi_BA = sum(data_j$BA)
+    N = nrow(data_j)
+    s = length(unique(data_j$树种代码))
+    si = data_j%>%group_by(树种代码)%>%summarise(n = n())
+    data_j = data_j%>%mutate(TSI_simpson = 1-sum((si$n/N)^2))
+    data_New = rbind(data_New,data_j)
+    
+  }
+  return(data_New)
+}
+
+
+
+data_1994 = TSI_simpson(data = data_1994)
+data_1999 = TSI_simpson(data = data_1999)
+data_2004 = TSI_simpson(data = data_2004)
+data_2009 = TSI_simpson(data = data_2009)
+data_2014 = TSI_simpson(data = data_2014)
+
+#TSI_McIntoch
+
+TSI_McIntoch = function(data){
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    data_j = data_j%>%mutate(BA =((pi/40000)*(胸径)^2 )/0.0667)
+    Yangdi_BA = sum(data_j$BA)
+    N = nrow(data_j)
+    s = length(unique(data_j$树种代码))
+    si = data_j%>%group_by(树种代码)%>%summarise(n = n())
+    data_j = data_j%>%mutate(TSI_McIntoch = (N-sqrt(sum((si$n)^2)))/(N-N/sqrt(s)))
+    data_New = rbind(data_New,data_j)
+    
+  }
+  return(data_New)
+}
+
+
+
+data_1994 = TSI_McIntoch(data = data_1994)
+data_1999 = TSI_McIntoch(data = data_1999)
+data_2004 = TSI_McIntoch(data = data_2004)
+data_2009 = TSI_McIntoch(data = data_2009)
+data_2014 = TSI_McIntoch(data = data_2014)
+
+
+#TSI_Berger_Parker
+
+TSI_Berger_Parker = function(data){
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    data_j = data_j%>%mutate(BA =((pi/40000)*(胸径)^2 )/0.0667)
+    Yangdi_BA = sum(data_j$BA)
+    N = nrow(data_j)
+    s = length(unique(data_j$树种代码))
+    si = data_j%>%group_by(树种代码)%>%summarise(n = n())
+    data_j = data_j%>%mutate(TSI_Berger_Parker = 1-(max(si$n)/N))
+    data_New = rbind(data_New,data_j)
+    
+  }
+  return(data_New)
+}
+
+
+
+data_1994 = TSI_Berger_Parker(data = data_1994)
+data_1999 = TSI_Berger_Parker(data = data_1999)
+data_2004 = TSI_Berger_Parker(data = data_2004)
+data_2009 = TSI_Berger_Parker(data = data_2009)
+data_2014 = TSI_Berger_Parker(data = data_2014)
+
+
+
