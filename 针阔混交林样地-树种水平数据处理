@@ -1,0 +1,253 @@
+library(dplyr)
+library(ggplot2)
+#library(openxlsx)
+
+#====================================================================================================================#
+#截取针阔混交林信息
+# 
+# data_duizhao = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T_YDfactors_final.csv',header = T)
+# data_duizhao = data_duizhao%>%select('原样地号','优势树种o')
+# 
+# data_duizhao =data_duizhao%>%filter(优势树种o =='针阔混交')
+# length(unique(data_duizhao$原样地号))
+# 
+# data_1994 =data_1994[data_1994$原样地号%in%data_duizhao$原样地号,]
+# data_1999 =data_1999[data_1999$原样地号%in%data_duizhao$原样地号,]
+# data_2004 =data_2004[data_2004$原样地号%in%data_duizhao$原样地号,]
+# data_2009 =data_2009[data_2009$原样地号%in%data_duizhao$原样地号,]
+# data_2014 =data_2014[data_2014$原样地号%in%data_duizhao$原样地号,]
+#读取已筛选完毕的针阔混数据
+data_1994_Yangmu = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_yangmu_1994.csv',header = T,encoding = 'UTF-8')
+data_1999_Yangmu = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_yangmu_1999.csv',header = T,encoding = 'UTF-8')
+data_2004_Yangmu =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_yangmu_2004.csv',header = T,encoding = 'UTF-8')
+data_2009_Yangmu =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_yangmu_2009.csv',header = T,encoding = 'UTF-8')
+data_2014_Yangmu = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_yangmu_2014.csv',header = T,encoding = 'UTF-8')
+
+
+
+
+shuzhongzucheng = function(data){
+  data$树种代码 = as.character(data$树种代码)
+  zhongwenshuzhong = function(data){
+    data = data%>%mutate(zhongwenshuzhong=ifelse(树种代码=='160','红松',树种代码))%>%
+      mutate(zhongwenshuzhong=ifelse(树种代码=='120','云杉',
+                                         ifelse(树种代码=='170','樟子松',
+                                                    ifelse(树种代码=='150','落叶松',
+                                                               ifelse(树种代码=='110','臭松',
+                                                                          ifelse(树种代码=='180','赤松',
+                                                                                     ifelse(树种代码=='190','黑松',
+                                                                                                ifelse(树种代码=='200','油松',
+                                                                                                           ifelse(树种代码=='260','国外松',
+                                                                                                                      ifelse(树种代码=='290','其它松类',
+                                                                                                                                 ifelse(树种代码=='431','水曲柳',
+                                                                                                                                            ifelse(树种代码=='432','胡桃楸',
+                                                                                                                                                       ifelse(树种代码=='433','黄菠萝',
+                                                                                                                                                                  ifelse(树种代码=='510','椴树',
+                                                                                                                                                                             ifelse(树种代码=='410','柞树',
+                                                                                                                                                                                        ifelse(树种代码=='460','榆树',
+                                                                                                                                                                                                   ifelse(树种代码=='422','枫桦',
+                                                                                                                                                                                                              ifelse(树种代码=='421','白桦',
+                                                                                                                                                                                                                         ifelse(树种代码=='530','杨树',
+                                                                                                                                                                                                                                    ifelse(树种代码=='640','刺槐',
+                                                                                                                                                                                                                                               ifelse(树种代码=='540','柳树',
+                                                                                                                                                                                                                                                          ifelse(树种代码=='590','杂木',
+                                                                                                                                                                                                                                                                     ifelse(树种代码=='490','其他硬阔',
+                                                                                                                                                                                                                                                                                ifelse(树种代码=='420','桦木',
+                                                                                                                                                                                                                                                                                           ifelse(树种代码=='160','红松',树种代码))))  )  )  )    )  ) ))))))))
+                                                                                                ))))))))
+    return(data)
+    
+  }
+  data = zhongwenshuzhong(data)
+  data_New = data.frame()
+  for (j in unique(data$原样地号)){
+    data_j = data%>%filter(原样地号==j)
+    data_j = data_j%>%mutate(树种组成G = paste(round(data_j$BAzhanbi*100),data_j$zhongwenshuzhong,sep = '*'))
+    
+    shuzhongzucheng_tamp = data_j%>%distinct(树种代码,BAzhanbi,树种组成G)%>%arrange(desc(BAzhanbi))
+    
+    shuzhongzuchengG = ''
+    
+    for ( i in shuzhongzucheng_tamp$树种组成G){
+      shuzhongzuchengG  = paste(shuzhongzuchengG,i,sep = ' ')
+    }
+    data_j = data_j%>%mutate(树种组成G_样地 = shuzhongzuchengG)
+    data_New = rbind(data_New,data_j)
+  }
+  return(data_New)
+}
+
+data_1994_Yangmu = shuzhongzucheng(data_1994_Yangmu)
+data_1999_Yangmu = shuzhongzucheng(data_1999_Yangmu)
+data_2004_Yangmu = shuzhongzucheng(data_2004_Yangmu)
+data_2009_Yangmu = shuzhongzucheng(data_2009_Yangmu)
+data_2014_Yangmu = shuzhongzucheng(data_2014_Yangmu)
+
+
+
+
+colnames(data_1994_Yangmu)
+
+
+Yangdihua_shuzhong = function(data){
+  data_Yangdi_shuzhong = data%>%group_by(原样地号,树种代码)%>%summarise(sum_BAI = sum(BAI),mean_QianqiD =mean(胸径),
+                                                  rSDI = mean(rSDI),mean_QianqiBA = mean(活立木大BA_qian),
+                                                  BAzhanbi = mean(BAzhanbi),aSDI= mean(aSDI),
+                                                  BAL=mean(BAL),zhongjian_BAL = mean(zhongjian_BAL),
+                                                  zhongnei_BAL = mean(zhongnei_BAL),n=n(),
+                                                  DI_shannon = mean(DI_shannon),DI_simpson = mean(DI_simpson),
+                                                  DI_McIntosh = mean(DI_McIntosh),DI_Berger_Parker = mean(DI_Berger_Parker),
+                                                  TSI_shannon = mean(TSI_shannon),TSI_simpson = mean(TSI_simpson),
+                                                  TSI_McIntosh = mean(TSI_McIntosh),TSI_Berger_Parker = mean(TSI_Berger_Parker))
+  shuzhongzucheng_duizhao = data%>%group_by(原样地号)%>%distinct(树种组成G_样地)
+  data_Yangdi_shuzhong = data_Yangdi_shuzhong%>%left_join(shuzhongzucheng_duizhao)
+  
+  
+  return(data_Yangdi_shuzhong)
+}
+
+data_1994 =Yangdihua_shuzhong(data_1994_Yangmu)
+data_1999 =Yangdihua_shuzhong(data_1999_Yangmu)
+data_2004 =Yangdihua_shuzhong(data_2004_Yangmu)
+data_2009 =Yangdihua_shuzhong(data_2009_Yangmu)
+
+
+Yangdihua_shuzhong_2014 =function(data){
+  data_Yangdi_shuzhong = data%>%group_by(原样地号,树种代码)%>%summarise(mean_QianqiD =mean(胸径),
+                                                                rSDI = mean(rSDI),mean_QianqiBA = mean(活立木大BA_qian),
+                                                                BAzhanbi = mean(BAzhanbi),aSDI= mean(aSDI),
+                                                                BAL=mean(BAL),zhongjian_BAL = mean(zhongjian_BAL),
+                                                                zhongnei_BAL = mean(zhongnei_BAL),n=n(),
+                                                                DI_shannon = mean(DI_shannon),DI_simpson = mean(DI_simpson),
+                                                                DI_McIntosh = mean(DI_McIntosh),DI_Berger_Parker = mean(DI_Berger_Parker),
+                                                                TSI_shannon = mean(TSI_shannon),TSI_simpson = mean(TSI_simpson),
+                                                                TSI_McIntosh = mean(TSI_McIntosh),TSI_Berger_Parker = mean(TSI_Berger_Parker))
+  shuzhongzucheng_duizhao = data%>%group_by(原样地号)%>%distinct(树种组成G_样地)
+  data_Yangdi_shuzhong = data_Yangdi_shuzhong%>%left_join(shuzhongzucheng_duizhao)
+  
+  
+  return(data_Yangdi_shuzhong)
+}
+
+data_2014 =Yangdihua_shuzhong_2014(data_2014_Yangmu)
+
+
+##样地信息提取
+data_1994_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P1994220.csv',header = T)
+colnames(data_1994_plot)[16] = '土层厚度'
+data_1999_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P1999220.csv',header = T)
+data_2004_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P2004220.csv',header = T)
+data_2009_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P2009220.csv',header = T)
+data_2014_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P2014220.csv',header = T)
+
+data_1994_plot$原样地号 = as.character(data_1994_plot$原样地号)
+data_1999_plot$原样地号 = as.character(data_1999_plot$原样地号)
+data_2004_plot$原样地号 = as.character(data_2004_plot$原样地号)
+data_2009_plot$原样地号 =as.character(data_2009_plot$原样地号)
+data_2014_plot$原样地号 =as.character(data_2014_plot$原样地号)
+
+data_1994$原样地号 = as.character(data_1994$原样地号)
+data_1999$原样地号 = as.character(data_1999$原样地号)
+data_2004$原样地号 = as.character(data_2004$原样地号)
+data_2009$原样地号 =as.character(data_2009$原样地号)
+data_2014$原样地号 =as.character(data_2014$原样地号)
+
+
+
+##样地信息合并
+data_1994_Yangdi = left_join(data_1994,data_1994_plot,by = '原样地号')%>%mutate(年份='1994')
+data_1999_Yangdi = left_join(data_1999,data_1999_plot,by = '原样地号')%>%mutate(年份='1999')
+data_2004_Yangdi = left_join(data_2004,data_1999_plot,by = '原样地号')%>%mutate(年份='2004')
+data_2009_Yangdi = left_join(data_2009,data_1999_plot,by = '原样地号')%>%mutate(年份='2009')
+data_2014_Yangdi = left_join(data_2014,data_2014_plot,by = '原样地号')%>%mutate(年份='2014')
+
+
+
+
+#气候变量读取
+data_1994_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\吉林1994年气候数据.csv',header = T)
+data_1999_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\吉林1999年气候数据.csv',header = T)
+data_2004_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\吉林2004年气候数据.csv',header = T)
+data_2009_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\吉林2009年气候数据.csv',header = T)
+data_2014_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\吉林2014年气候数据.csv',header = T)
+colnames(data_1994_climate)[1] = '原样地号'
+colnames(data_1999_climate)[1] = '原样地号'
+colnames(data_2004_climate)[1] = '原样地号'
+colnames(data_2009_climate)[1] = '原样地号'
+colnames(data_2014_climate)[1] = '原样地号'
+
+data_1994_climate$原样地号 = as.character(data_1994_climate$原样地号)
+data_1999_climate$原样地号 = as.character(data_1999_climate$原样地号)
+data_2004_climate$原样地号 = as.character(data_2004_climate$原样地号)
+data_2009_climate$原样地号 = as.character(data_2009_climate$原样地号)
+data_2014_climate$原样地号 = as.character(data_2014_climate$原样地号)
+
+
+data_1994_Yangdi = left_join(data_1994_Yangdi,data_1994_climate,by = '原样地号')
+data_1999_Yangdi = left_join(data_1999_Yangdi,data_1994_climate,by = '原样地号')
+data_2004_Yangdi = left_join(data_2004_Yangdi,data_1994_climate,by = '原样地号')
+data_2009_Yangdi = left_join(data_2009_Yangdi,data_1994_climate,by = '原样地号')
+data_2014_Yangdi = left_join(data_2014_Yangdi,data_1994_climate,by = '原样地号')
+
+
+
+
+
+#国红表信息提取
+guohong = read.csv(file = 'C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T_YDfactors_final.csv',header = T)
+guohong$调查时间 = as.character(guohong$调查时间)
+
+guohong_1994 = guohong%>%filter(调查时间=='1994')
+guohong_1999 = guohong%>%filter(调查时间=='1999')
+guohong_2004 = guohong%>%filter(调查时间=='2004')
+guohong_2009 = guohong%>%filter(调查时间=='2009')
+guohong_2014 = guohong%>%filter(调查时间=='2014')
+
+guohong_1994$原样地号 = as.character(guohong_1994$原样地号)
+guohong_1999$原样地号 = as.character(guohong_1999$原样地号)
+guohong_2004$原样地号 = as.character(guohong_2004$原样地号)
+guohong_2009$原样地号 = as.character(guohong_2009$原样地号)
+guohong_2014$原样地号 = as.character(guohong_2014$原样地号)
+
+
+
+
+
+guohong_1994_zhibiao = guohong_1994%>%distinct(原样地号,优势高YD,优势径YD,优势高SZ,优势径SZ)
+data_1994_Yangdi = left_join(data_1994_Yangdi,guohong_1994_zhibiao,by = '原样地号')
+
+guohong_1999_zhibiao = guohong_1999%>%distinct(原样地号,优势高YD,优势径YD,优势高SZ,优势径SZ)
+data_1999_Yangdi = left_join(data_1999_Yangdi,guohong_1999_zhibiao,by = '原样地号')
+
+guohong_2004_zhibiao = guohong_2004%>%distinct(原样地号,优势高YD,优势径YD,优势高SZ,优势径SZ)
+data_2004_Yangdi = left_join(data_2004_Yangdi,guohong_2004_zhibiao,by = '原样地号')
+
+
+guohong_2009_zhibiao = guohong_2009%>%distinct(原样地号,优势高YD,优势径YD,优势高SZ,优势径SZ)
+data_2009_Yangdi = left_join(data_2009_Yangdi,guohong_2009_zhibiao,by = '原样地号')
+
+guohong_2014_zhibiao = guohong_2014%>%distinct(原样地号,优势高YD,优势径YD,优势高SZ,优势径SZ)
+data_2014_Yangdi = left_join(data_2014_Yangdi,guohong_2014_zhibiao,by = '原样地号')
+
+
+
+
+#=========================================================合并数据 1994年-2009年 包含BAI======================================================================================================#
+data_Yangdi_Zong = bind_rows(data_1994_Yangdi,data_1999_Yangdi,data_2004_Yangdi,data_2009_Yangdi)
+data_Yangdi_Zong = data_Yangdi_Zong%>%mutate(公顷株数 = n/0.0667)
+write.csv(data_Yangdi_Zong,'针阔混交林样地-树种水平数据-1994年-2009年-全指标.csv',fileEncoding = 'UTF-8')
+colnames(data_Yangdi_Zong)
+
+
+data_Yangdi_Zong = data_Yangdi_Zong[,1:68]
+data_Yangdi_Zong = data_Yangdi_Zong[complete.cases(data_Yangdi_Zong),]
+data_Yangdi_Zong = data_Yangdi_Zong%>%mutate(公顷株数 = n/0.0667)
+write.csv(data_Yangdi_Zong,'针阔混交林样地-树种水平数据-1994年-2009年-建模用指标.csv',fileEncoding = 'UTF-8')
+#data_Yangdi_Zong = data_Yangdi_Zong%>%mutate(trans_Qianqi_BA =((pi/40000)*(mean_QianqiD/10)^2 )/0.0667 )
+
+
+#===========================================================合并数据 1994年-2014年======================================================================================================#
+data_Yangdi_Zong = bind_rows(data_1994_Yangdi,data_1999_Yangdi,data_2004_Yangdi,data_2009_Yangdi,data_2014_Yangdi)
+data_Yangdi_Zong = data_Yangdi_Zong%>%mutate(公顷株数 = n/0.0667)
+write.csv(data_Yangdi_Zong,'针阔混交林样地-树种水平数据-1994年-2014年-全指标.csv',fileEncoding = 'UTF-8')
+
