@@ -160,28 +160,79 @@ data_2014 = zhongnei_BAL(data = data_2014)
 
 #计算直径多样性 shannon均匀度指数，公式取自欧师兄开题报告
 
+####径阶函数，输入数据框  输出数据框#采用2cm为单位径阶距 起测径阶6cm
+
+jingjiehua = function(data){
+  
+  jingjie_function = function(x){
+    y = floor(x)
+    y = ifelse( y %%2 ==0,y,y+1)
+    return(y)
+  }
+  D = data%>%select(胸径)%>%rename(径阶=胸径)%>%map(jingjie_function)%>%as_tibble()
+  
+  data = data%>%bind_cols(D)
+  
+  return(data)
+
+}
+
+
+
+
+data_1994 = jingjiehua(data_1994)
+data_1999 = jingjiehua(data_1999)
+data_2004 = jingjiehua(data_2004)
+data_2009 = jingjiehua(data_2009)
+data_2014 = jingjiehua(data_2014)
+
+
+
+
+
+#计算直径多样性 shannon均匀度指数，公式取自欧师兄开题报告
+
+
 
 DI_shannon = function(data){
+
+  
   data_New = data.frame()
   for (j in unique(data$原样地号)){
     data_j = data%>%filter(原样地号==j)
     data_j = data_j%>%mutate(BA =((pi/40000)*(胸径)^2 )/0.0667)
     Yangdi_BA = sum(data_j$BA)
-    n = nrow(data_j)
-    data_j = data_j%>%mutate(DI_shannon = -sum((data_j$BA)/Yangdi_BA*log(data_j$BA/Yangdi_BA))/log(n))
+    
+    data_j_temp = data_j%>%group_by(径阶)%>%summarise(sum_jingjie_BA = sum(BA))
+    N =length(unique(data_j$径阶))
+    data_j = data_j%>%mutate(DI_shannon = -sum(data_j_temp$sum_jingjie_BA/Yangdi_BA*log(data_j_temp$sum_jingjie_BA/Yangdi_BA))   /log(N))
     data_New = rbind(data_New,data_j)
     
   }
   return(data_New)
 }
 
-
-
 data_1994 = DI_shannon(data = data_1994)
 data_1999 = DI_shannon(data = data_1999)
 data_2004 = DI_shannon(data = data_2004)
 data_2009 = DI_shannon(data = data_2009)
 data_2014 = DI_shannon(data = data_2014)
+
+data_1994 = DI_shannon(data = data_1994_Yangmu)
+data_1999 = DI_shannon(data = data_1999_Yangmu)
+data_2004 = DI_shannon(data = data_2004_Yangmu)
+data_2009 = DI_shannon(data = data_2009_Yangmu)
+data_2014 = DI_shannon(data = data_2014_Yangmu)
+
+
+# data_1994_4037 = data_1994%>%filter(原样地号 ==4037)
+# 
+# length(unique(data_1994_4037$径阶))
+# 
+# data_1994_4037_temp = data_1994_4037%>%group_by(径阶)%>%summarise(sum_jingjie_BA = sum(BA))
+# nrow(data_1994_4037_temp)
+# 
+# View(data_1994_Yangmu %>%group_by(原样地号,径阶)%>%summarise(sum_jingjie_BA=sum(BA)))
 
 #计算直径多样性Simpson指数
 
@@ -193,8 +244,8 @@ DI_simpson = function(data){
     data_j = data%>%filter(原样地号==j)
     data_j = data_j%>%mutate(BA =((pi/40000)*(胸径)^2 )/0.0667)
     Yangdi_BA = sum(data_j$BA)
-    n = nrow(data_j)
-    data_j = data_j%>%mutate(DI_simpson = 1-sum((data_j$BA/Yangdi_BA)^2))
+    data_j_temp = data_j%>%group_by(径阶)%>%summarise(sum_jingjie_BA = sum(BA))
+    data_j = data_j%>%mutate(DI_simpson = 1-sum((data_j_temp$sum_jingjie_BA/Yangdi_BA)^2))
     data_New = rbind(data_New,data_j)
     
   }
@@ -209,6 +260,10 @@ data_2009 = DI_simpson(data = data_2009)
 data_2014 = DI_simpson(data = data_2014)
 
 
+data_1994_343 = data_1994%>%filter(原样地号==343)
+nrow(data_1994_343)
+data_1994_343 = data_1994_343%>%select(DI_simpson,DI_Berger_Parker,DI_shannon,DI_McIntosh,胸径,BA,径阶,TSI_shannon,TSI_simpson,TSI_McIntosh,TSI_Berger_Parker,树种代码)
+View(data_1994_343%>%group_by(树种代码)%>%summarise(sum_jingjie_BA = sum(BA),n = n()))
 
 #DI_McIntosh
 
@@ -218,8 +273,9 @@ DI_McIntosh = function(data){
     data_j = data%>%filter(原样地号==j)
     data_j = data_j%>%mutate(BA =((pi/40000)*(胸径)^2 )/0.0667)
     Yangdi_BA = sum(data_j$BA)
-    n = nrow(data_j)
-    data_j = data_j%>%mutate(DI_McIntosh = (data_j$BA-sqrt(sum(data_j$BA^2)))/data_j$BA-(data_j$BA/sqrt(n)))
+    data_j_temp = data_j%>%group_by(径阶)%>%summarise(sum_jingjie_BA = sum(BA))
+    N = nrow(data_j_temp)
+    data_j = data_j%>%mutate(DI_McIntosh = (Yangdi_BA-sqrt(sum(data_j_temp$sum_jingjie_BA^2)))/(Yangdi_BA-(Yangdi_BA/sqrt(N))))
     data_New = rbind(data_New,data_j)
     
   }
@@ -241,8 +297,9 @@ DI_Berger_Parker = function(data){
     data_j = data%>%filter(原样地号==j)
     data_j = data_j%>%mutate(BA =((pi/40000)*(胸径)^2 )/0.0667)
     Yangdi_BA = sum(data_j$BA)
-    n = nrow(data_j)
-    data_j = data_j%>%mutate(DI_Berger_Parker = 1-(max(data_j$BA)/Yangdi_BA))
+    data_j_temp = data_j%>%group_by(径阶)%>%summarise(sum_jingjie_BA = sum(BA))
+    N = nrow(data_j_temp)
+    data_j = data_j%>%mutate(DI_Berger_Parker = 1-(max(data_j_temp$sum_jingjie_BA)/Yangdi_BA))
     data_New = rbind(data_New,data_j)
     
   }
@@ -255,6 +312,7 @@ data_1999 = DI_Berger_Parker(data = data_1999)
 data_2004 = DI_Berger_Parker(data = data_2004)
 data_2009 = DI_Berger_Parker(data = data_2009)
 data_2014 = DI_Berger_Parker(data = data_2014)
+
 
 ###树种多样性指数
 
