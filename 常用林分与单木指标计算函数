@@ -1,5 +1,20 @@
 
 
+####径阶函数，输入数据框  输出数据框#采用2cm为单位径阶距 起测径阶6cm
+
+jingjiehua = function(data){
+  
+  jingjie_function = function(x){
+    y = floor(x)
+    y = ifelse( y %%2 ==0,y,y+1)
+    return(y)
+  }
+  D = data%>%select(胸径)%>%rename(径阶=胸径)%>%map(jingjie_function)%>%as_tibble()
+  
+  data = data%>%bind_cols(D)
+  
+  return(data)
+
 
 #计算asdi
 
