@@ -7,7 +7,7 @@ library(ggplot2)
 #====================================================================================================================#
 #截取针阔混交林信息
 # 
-# data_duizhao = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T_YDfactors_final.csv',header = T)
+# data_duizhao = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T)
 # data_duizhao = data_duizhao%>%select('原样地号','优势树种o')
 # 
 # data_duizhao =data_duizhao%>%filter(优势树种o =='针阔混交')
@@ -19,11 +19,11 @@ library(ggplot2)
 # data_2009 =data_2009[data_2009$原样地号%in%data_duizhao$原样地号,]
 # data_2014 =data_2014[data_2014$原样地号%in%data_duizhao$原样地号,]
 #读取已筛选完毕的针阔混数据
-data_1994 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_1994_zhenkuohun.csv',header = T,encoding = 'UTF-8')
-data_1999 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_1999_zhenkuohun.csv',header = T,encoding = 'UTF-8')
-data_2004 =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_2004_zhenkuohun.csv',header = T,encoding = 'UTF-8')
-data_2009 =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_2009_zhenkuohun.csv',header = T,encoding = 'UTF-8')
-data_2014 = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_2014_zhenkuohun.csv',header = T,encoding = 'UTF-8')
+data_1994 = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T,encoding = 'UTF-8')
+data_1999 = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T,encoding = 'UTF-8')
+data_2004 =  read.csv('C:\\Users\\lenovo\\Desktop\\...csv',header = T,encoding = 'UTF-8')
+data_2009 =  read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T,encoding = 'UTF-8')
+data_2014 = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T,encoding = 'UTF-8')
 
 
 data_1994$原样地号 = as.character(data_1994$原样地号)
@@ -385,12 +385,12 @@ data_2014 = TSI_Berger_Parker(data = data_2014)
 
 
 ##样地信息提取
-data_1994_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P1994220.csv',header = T)
+data_1994_plot = read.csv('C:\\Users\\lenovo\\Desktop\....csv',header = T)
 colnames(data_1994_plot)[16] = '土层厚度'
-data_1999_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P1999220.csv',header = T)
-data_2004_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P2004220.csv',header = T)
-data_2009_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P2009220.csv',header = T)
-data_2014_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P2014220.csv',header = T)
+data_1999_plot = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T)
+data_2004_plot = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T)
+data_2009_plot = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T)
+data_2014_plot = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T)
 
 data_1994_plot$原样地号 = as.character(data_1994_plot$原样地号)
 data_1999_plot$原样地号 = as.character(data_1999_plot$原样地号)
@@ -410,11 +410,11 @@ data_2014_Yangmu = left_join(data_2014,data_2014_plot,by = '原样地号')%>%mut
 
 
 #气候变量读取
-data_1994_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\吉林1994年气候数据.csv',header = T)
-data_1999_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\吉林1999年气候数据.csv',header = T)
-data_2004_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\吉林2004年气候数据.csv',header = T)
-data_2009_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\吉林2009年气候数据.csv',header = T)
-data_2014_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\吉林2014年气候数据.csv',header = T)
+data_1994_climate = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T)
+data_1999_climate = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T)
+data_2004_climate = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T)
+data_2009_climate = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T)
+data_2014_climate = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T)
 colnames(data_1994_climate)[1] = '原样地号'
 colnames(data_1999_climate)[1] = '原样地号'
 colnames(data_2004_climate)[1] = '原样地号'
@@ -459,7 +459,7 @@ length(is.na(data_Yangmu_Zong))
 data_Yangmu_Zong = data_Yangmu_Zong[complete.cases(data_Yangmu_Zong),]
 
 
-setwd('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据')
+setwd('C:\\Users\\lenovo\\Desktop\\...')
 write.csv(data_Yangmu_Zong,'data_Yangmu_Zong_包含BAI_1994-2009年.csv',fileEncoding = 'UTF-8')
 
 
