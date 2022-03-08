@@ -5,7 +5,7 @@ library(ggplot2)
 #====================================================================================================================#
 #截取针阔混交林信息
 # 
-# data_duizhao = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T_YDfactors_final.csv',header = T)
+# data_duizhao = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\....csv',header = T)
 # data_duizhao = data_duizhao%>%select('原样地号','优势树种o')
 # 
 # data_duizhao =data_duizhao%>%filter(优势树种o =='针阔混交')
@@ -17,11 +17,11 @@ library(ggplot2)
 # data_2009 =data_2009[data_2009$原样地号%in%data_duizhao$原样地号,]
 # data_2014 =data_2014[data_2014$原样地号%in%data_duizhao$原样地号,]
 #读取已筛选完毕的针阔混数据
-data_1994_Yangmu = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_yangmu_1994.csv',header = T,encoding = 'UTF-8')
-data_1999_Yangmu = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_yangmu_1999.csv',header = T,encoding = 'UTF-8')
-data_2004_Yangmu =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_yangmu_2004.csv',header = T,encoding = 'UTF-8')
-data_2009_Yangmu =  read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_yangmu_2009.csv',header = T,encoding = 'UTF-8')
-data_2014_Yangmu = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\data_yangmu_2014.csv',header = T,encoding = 'UTF-8')
+data_1994_Yangmu = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T,encoding = 'UTF-8')
+data_1999_Yangmu = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T,encoding = 'UTF-8')
+data_2004_Yangmu =  read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T,encoding = 'UTF-8')
+data_2009_Yangmu =  read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T,encoding = 'UTF-8')
+data_2014_Yangmu = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T,encoding = 'UTF-8')
 
 
 
@@ -133,12 +133,12 @@ data_2014 =Yangdihua_shuzhong_2014(data_2014_Yangmu)
 
 
 ##样地信息提取
-data_1994_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P1994220.csv',header = T)
+data_1994_plot = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T)
 colnames(data_1994_plot)[16] = '土层厚度'
-data_1999_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P1999220.csv',header = T)
-data_2004_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P2004220.csv',header = T)
-data_2009_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P2009220.csv',header = T)
-data_2014_plot = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\P2014220.csv',header = T)
+data_1999_plot = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T)
+data_2004_plot = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T)
+data_2009_plot = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T)
+data_2014_plot = read.csv('C:\\Users\\lenovo\\Desktop\\....csv',header = T)
 
 data_1994_plot$原样地号 = as.character(data_1994_plot$原样地号)
 data_1999_plot$原样地号 = as.character(data_1999_plot$原样地号)
@@ -165,11 +165,11 @@ data_2014_Yangdi = left_join(data_2014,data_2014_plot,by = '原样地号')%>%mut
 
 
 #气候变量读取
-data_1994_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\吉林1994年气候数据.csv',header = T)
-data_1999_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\吉林1999年气候数据.csv',header = T)
-data_2004_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\吉林2004年气候数据.csv',header = T)
-data_2009_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\吉林2009年气候数据.csv',header = T)
-data_2014_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\吉林2014年气候数据.csv',header = T)
+data_1994_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\....csv',header = T)
+data_1999_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\....csv',header = T)
+data_2004_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\....csv',header = T)
+data_2009_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\....csv',header = T)
+data_2014_climate = read.csv('C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林5期_调查时间的样地气候\\....csv',header = T)
 colnames(data_1994_climate)[1] = '原样地号'
 colnames(data_1999_climate)[1] = '原样地号'
 colnames(data_2004_climate)[1] = '原样地号'
@@ -194,7 +194,7 @@ data_2014_Yangdi = left_join(data_2014_Yangdi,data_1994_climate,by = '原样地�
 
 
 #国红表信息提取
-guohong = read.csv(file = 'C:\\Users\\lenovo\\Desktop\\徐奇刚\\吉林数据\\T_YDfactors_final.csv',header = T)
+guohong = read.csv(file = 'C:\\Users\\lenovo\\Desktop\....csv',header = T)
 guohong$调查时间 = as.character(guohong$调查时间)
 
 guohong_1994 = guohong%>%filter(调查时间=='1994')
