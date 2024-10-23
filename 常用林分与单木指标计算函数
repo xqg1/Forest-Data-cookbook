@@ -22,7 +22,7 @@ aSDI = function(data){
   data_New = data.frame()
   for (j in unique(data$原样地号)){
     data_j = data%>%filter(原样地号==j)
-    data_j =data_j%>%mutate(aSDI_yangmu =((胸径/20)^1.605)/0.0667)%>%mutate(aSDI = sum(aSDI_yangmu))
+    data_j =data_j%>%mutate(aSDI_yangmu =((10/胸径)^1.605)/0.0667)%>%mutate(aSDI = sum(aSDI_yangmu))
     data_New = rbind(data_New,data_j)
     
     
@@ -46,7 +46,7 @@ rSDI = function(data){
   for (j in unique(data$原样地号)){
     data_j = data%>%filter(原样地号==j)
     n = length(data_j)
-    data_j = data_j%>%mutate(Dg = sqrt(sum(胸径^2)/n))%>%mutate(rSDI = n/0.0667*((Dg/20)^1.605))
+    data_j = data_j%>%mutate(Dg = sqrt(sum(胸径^2)/n))%>%mutate(rSDI = n/0.0667*((10/Dg)^1.605))
     data_New = rbind(data_New,data_j)
     
   }
